@@ -5,6 +5,16 @@ yang dikembangkan menjadi game HP: kontrol sentuh, pilihan stage, empat skin,
 sistem nyawa, item yang bisa diambil, rekor per stage, jeda, dan lapisan efek
 visual.
 
+**▶ Main sekarang: <https://andrryynn21-glitch.github.io/game-2d/>**
+
+Langsung jalan di browser HP (Android dan iPhone) maupun desktop — tidak ada
+yang perlu di-install. Link itu boleh disebarkan ke siapa pun. Di HP, menu
+browser *Add to Home Screen* / *Tambahkan ke layar Utama* akan memasang ikonnya
+sehingga terbuka layar penuh seperti aplikasi biasa.
+
+Unduhan pertama sekitar 40 MB (mesin Godot), jadi pembukaan pertama di jaringan
+lambat butuh sebentar; sesudahnya di-cache browser dan langsung terbuka.
+
 | | |
 |---|---|
 | Engine | Godot 4.7, GDScript |
@@ -270,19 +280,46 @@ Latar dan peta tinggal di `BackgroundLayer` (`CanvasLayer` dengan `layer = -1`),
 terpisah dari `Camera2D`. Kalau tidak, guncangan kamera akan menggeser latar dan
 memperlihatkan tepinya.
 
-## Export Web & tes di HP
+## Menerbitkan & tes di HP
 
-Ini satu-satunya tes yang benar-benar menjawab "nyaman dipakai di HP".
+Ada dua jalur, untuk dua keperluan berbeda.
 
-**Jalan cepat:** `./hp.sh` — export ulang, baca IP Wi-Fi, dan jalankan server
-dalam satu perintah. Alamat yang harus dibuka di HP dicetak di layar. Itu juga
-siklus kerja sehari-hari: ubah di Godot → `./hp.sh` → muat ulang di HP.
+### Menerbitkan ke internet — `./publish.sh`
 
-Alamat IP-nya **dibaca ulang setiap kali**, tidak ditulis tetap: pindah Wi-Fi
-berarti alamatnya berubah, dan alamat lama akan terlihat seperti "gamenya
-rusak" padahal cuma salah nomor.
+Untuk **menyebarkan** game. Satu perintah: export ulang, unggah ke cabang
+`gh-pages`, dan GitHub Pages menayangkannya di alamat yang tetap.
 
-Langkah manualnya, kalau ingin lewat editor:
+```sh
+./publish.sh
+```
+
+Alamatnya **tidak pernah berubah**, jadi link yang sudah dibagikan ke orang lain
+otomatis menampilkan versi terbaru — tidak perlu dikirim ulang. GitHub butuh
+sekitar satu menit untuk menayangkan hasil unggahan.
+
+Pembagian cabangnya disengaja: `main` berisi **sumber**, `gh-pages` berisi
+**hasil cetakan** saja. Karena itu `build/` masuk `.gitignore` — hasil export
+tidak pernah tercampur ke riwayat sumber.
+
+Dua setelan git di skrip itu bukan hiasan: unggahan ~40 MB di koneksi lambat
+akan diputus server dengan `HTTP 408` tanpa `http.postBuffer` besar dan
+`http.lowSpeedLimit 0`.
+
+### Tes cepat lewat Wi-Fi — `./hp.sh`
+
+Untuk **mencoba sendiri** sebelum diterbitkan. Menjalankan server di laptop dan
+mencetak alamat yang harus dibuka di HP.
+
+```sh
+./hp.sh
+```
+
+Lebih cepat daripada `publish.sh` (tidak ada unggahan), tapi laptop harus
+menyala dan HP harus di Wi-Fi yang sama. Alamat IP dibaca ulang setiap kali,
+tidak ditulis tetap: pindah Wi-Fi berarti alamatnya berubah, dan alamat lama
+akan terlihat seperti "gamenya rusak" padahal cuma salah nomor.
+
+### Langkah manual lewat editor
 
 1. **Buka proyek di Godot 4.7.** Kalau template export belum ada:
    *Editor > Manage Export Templates > Download and Install*.
@@ -313,11 +350,11 @@ Catatan:
 - Suara baru berbunyi setelah sentuhan pertama; itu kebijakan browser, bukan bug.
   Karena pemain harus menekan **Mulai**, urusannya beres sendiri.
 - Folder `build/` adalah **hasil sementara**, bukan sumber. Boleh dihapus kapan
-  saja; `./hp.sh` membuatnya lagi. Isinya tidak perlu disimpan ke git.
-- Tes lewat Wi-Fi ini **tidak butuh git maupun hosting**. Keduanya baru relevan
-  kalau game ingin dibuka orang lain dari luar jaringan Anda — misalnya
-  diletakkan di GitHub Pages atau itch.io, yang sama-sama tinggal menerima isi
-  `build/` apa adanya.
+  saja; `./hp.sh` dan `./publish.sh` membuatnya lagi. Isinya tidak masuk cabang
+  `main`.
+- Thread juga sengaja mati karena alasan yang sama berlaku di GitHub Pages:
+  Pages tidak mengirim header COOP/COEP, jadi build ber-thread akan gagal dimuat
+  di sana.
 
 ## Verifikasi
 
@@ -373,7 +410,8 @@ art/reef/              SVG skin Karang
 art/items/             SVG item, hiasan dasar laut, dan gelembung
 web/head_include.html  potongan HTML untuk export Web
 export_presets.cfg     preset export Web
-hp.sh                  export ulang + server Wi-Fi, untuk tes di HP
+hp.sh                  export + server Wi-Fi, untuk tes cepat di HP
+publish.sh             export + unggah ke GitHub Pages, untuk menerbitkan
 ```
 
 ## Screenshots

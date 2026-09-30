@@ -1,0 +1,143 @@
+<!--
+	Potongan ini disuntikkan ke dalam <head> halaman hasil export Web.
+
+	Terpasang lewat: Project > Export > Web > HTML > Head Include
+	(di berkas preset namanya `html/head_include`).
+
+	Isinya sudah ikut tersalin ke `export_presets.cfg` sebagai satu baris, jadi
+	biasanya Anda tidak perlu melakukan apa pun. Berkas ini adalah versi yang
+	bisa dibaca manusia dan menjadi sumber kebenaran: kalau editor Godot menulis
+	ulang `export_presets.cfg` dan kolom Head Include jadi kosong, salin ulang
+	bagian <style> sampai </script> di bawah ke kolom tersebut.
+
+	Kenapa Head Include, bukan custom HTML shell: placeholder di dalam shell
+	($GODOT_URL, $GODOT_CONFIG, dan kawan-kawan) berubah antar versi Godot,
+	sehingga shell salinan cenderung rusak saat upgrade. Head Include hanya
+	menambah, tidak menggantikan.
+
+	Tiga hal yang diselesaikan di sini, semuanya wajib untuk rasa "aplikasi HP":
+
+	1. touch-action: none
+	   Tanpa ini, geser jari untuk menggerakkan karakter akan men-scroll halaman
+	   atau memicu pull-to-refresh. Kontrol akan terasa rusak, padahal gamenya
+	   benar. Ini perbaikan paling penting di berkas ini.
+
+	2. viewport-fit=cover + user-scalable=no
+	   Kanvas memenuhi layar sampai ke belakang notch, dan ketukan ganda tidak
+	   lagi memperbesar halaman.
+
+	3. window.gameSafeArea()
+	   DisplayServer.get_display_safe_area() tidak tahu apa-apa soal notch di
+	   browser; satu-satunya sumber yang tahu adalah env(safe-area-inset-*) milik
+	   CSS. Fungsi ini membacanya dan menyerahkannya ke ui/SafeArea.gd.
+
+	   Nilainya dikirim sebagai FRAKSI ukuran jendela (0..1), bukan piksel.
+	   Alasannya: piksel CSS dan piksel kanvas berbeda faktor devicePixelRatio,
+	   dan faktor itu bergantung pengaturan HiDPI. Fraksi bebas dari urusan itu —
+	   GDScript hanya perlu mengalikannya dengan ukuran kanvasnya sendiri.
+
+	   Kembaliannya berupa String "kiri,atas,kanan,bawah" karena JavaScriptBridge
+	   hanya bisa memulangkan tipe sederhana; Array akan jadi null.
+-->
+<style>
+	html, body {
+		margin: 0;
+		padding: 0;
+		border: 0;
+		width: 100%;
+		height: 100%;
+		overflow: hidden;
+		background: #000;
+	}
+
+	/* position: fixed menghentikan efek "karet" iOS saat jari digeser melewati
+	   tepi layar. */
+	body {
+		position: fixed;
+		top: 0;
+		left: 0;
+		overscroll-behavior: none;
+		-webkit-tap-highlight-color: transparent;
+		-webkit-touch-callout: none;
+		-webkit-user-select: none;
+		user-select: none;
+	}
+
+	html, body, canvas {
+		touch-action: none;
+	}
+
+	canvas {
+		display: block;
+	}
+
+	canvas:focus {
+		outline: none;
+	}
+</style>
+<script>
+	(function () {
+		var meta = document.querySelector('meta[name=viewport]');
+		if (!meta) {
+			meta = document.createElement('meta');
+			meta.name = 'viewport';
+			document.head.appendChild(meta);
+		}
+		/* Ditulis ulang, bukan ditambahkan: meta bawaan Godot sudah ada di atas
+		   potongan ini, dan dua meta viewport hasilnya bergantung urutan. */
+		meta.content = 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover';
+
+		var block = function (event) {
+			event.preventDefault();
+		};
+		/* gesture* = cubit-perbesar di Safari. contextmenu = menu tekan-lama di
+		   Android, yang muncul tepat saat pemain menahan jari untuk bergerak. */
+		['gesturestart', 'gesturechange', 'gestureend', 'contextmenu'].forEach(function (name) {
+			document.addEventListener(name, block, { passive: false });
+		});
+
+		var probe = null;
+		var ensureProbe = function () {
+			if (probe || !document.body) {
+				return probe;
+			}
+			probe = document.createElement('div');
+			/* Elemen pengukur: padding-nya diisi env(), lalu dibaca kembali lewat
+			   getComputedStyle. visibility:hidden tetap ikut tata letak, jadi
+			   nilainya benar-benar terhitung (display:none tidak akan). */
+			probe.style.cssText = 'position:fixed;top:0;left:0;width:0;height:0;' +
+				'visibility:hidden;pointer-events:none;z-index:-1;' +
+				'padding-left:env(safe-area-inset-left,0px);' +
+				'padding-top:env(safe-area-inset-top,0px);' +
+				'padding-right:env(safe-area-inset-right,0px);' +
+				'padding-bottom:env(safe-area-inset-bottom,0px);';
+			document.body.appendChild(probe);
+			return probe;
+		};
+
+		window.gameSafeArea = function () {
+			var node = ensureProbe();
+			if (!node) {
+				return '0,0,0,0';
+			}
+			var style = window.getComputedStyle(node);
+			var width = window.innerWidth || 1;
+			var height = window.innerHeight || 1;
+			var fraction = function (value, span) {
+				var pixels = parseFloat(value);
+				if (!isFinite(pixels) || pixels < 0) {
+					pixels = 0;
+				}
+				/* Margin lebih dari seperempat layar pasti salah; jangan sampai
+				   nilai aneh dari browser memakan area bermain. */
+				return Math.min(pixels / span, 0.25).toFixed(6);
+			};
+			return [
+				fraction(style.paddingLeft, width),
+				fraction(style.paddingTop, height),
+				fraction(style.paddingRight, width),
+				fraction(style.paddingBottom, height)
+			].join(',');
+		};
+	})();
+</script>

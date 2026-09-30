@@ -1,0 +1,95 @@
+[gd_scene load_steps=14 format=3 uid="uid://49hirbc3bhqpk"]
+
+[ext_resource type="Script" uid="uid://dl7mem5utts6o" path="res://Main.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://r2r1xzcseqz9r" path="res://Mob.tscn" id="2_mob"]
+[ext_resource type="PackedScene" uid="uid://bmy3ggffd7bp5" path="res://Player.tscn" id="3_player"]
+[ext_resource type="PackedScene" uid="uid://30rc0fdm6ul6r" path="res://HUD.tscn" id="4_hud"]
+[ext_resource type="AudioStream" uid="uid://dksxxl83oapma" path="res://art/House In a Forest Loop.ogg" id="5_music"]
+[ext_resource type="AudioStream" uid="uid://wm5iung41hp7" path="res://art/gameover.wav" id="6_death"]
+[ext_resource type="Script" path="res://fx/Background.gd" id="7_background"]
+[ext_resource type="Script" path="res://fx/AmbientParticles.gd" id="8_particles"]
+[ext_resource type="Script" path="res://fx/ScreenShake.gd" id="9_shake"]
+[ext_resource type="PackedScene" path="res://ui/TouchControls.tscn" id="10_touch"]
+[ext_resource type="PackedScene" path="res://Pickup.tscn" id="11_pickup"]
+[ext_resource type="Script" path="res://fx/SeafloorDecor.gd" id="12_decor"]
+
+[sub_resource type="Curve2D" id="Curve2D_mobpath"]
+_data = {
+"points": PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 480, 0, 0, 0, 0, 0, 480, 720, 0, 0, 0, 0, 0, 720, 0, 0, 0, 0, 0, 0)
+}
+point_count = 5
+
+[node name="Main" type="Node"]
+script = ExtResource("1_script")
+mob_scene = ExtResource("2_mob")
+pickup_scene = ExtResource("11_pickup")
+
+[node name="BackgroundLayer" type="CanvasLayer" parent="."]
+layer = -1
+
+[node name="Background" type="ColorRect" parent="BackgroundLayer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+color = Color(0.219608, 0.372549, 0.380392, 1)
+script = ExtResource("7_background")
+
+[node name="MapTexture" type="TextureRect" parent="BackgroundLayer"]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 6
+
+[node name="SeafloorDecor" type="Node2D" parent="BackgroundLayer"]
+script = ExtResource("12_decor")
+
+[node name="AmbientParticles" type="Node2D" parent="."]
+script = ExtResource("8_particles")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+script = ExtResource("9_shake")
+
+[node name="Player" parent="." instance=ExtResource("3_player")]
+
+[node name="MobTimer" type="Timer" parent="."]
+wait_time = 0.5
+
+[node name="ScoreTimer" type="Timer" parent="."]
+
+[node name="PickupTimer" type="Timer" parent="."]
+wait_time = 4.5
+
+[node name="StartTimer" type="Timer" parent="."]
+wait_time = 2.0
+one_shot = true
+
+[node name="StartPosition" type="Marker2D" parent="."]
+position = Vector2(240, 450)
+
+[node name="MobPath" type="Path2D" parent="."]
+curve = SubResource("Curve2D_mobpath")
+
+[node name="MobSpawnLocation" type="PathFollow2D" parent="MobPath"]
+
+[node name="TouchControls" parent="." instance=ExtResource("10_touch")]
+
+[node name="HUD" parent="." instance=ExtResource("4_hud")]
+
+[node name="Music" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("5_music")
+
+[node name="DeathSound" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("6_death")
+
+[connection signal="hit" from="Player" to="." method="_on_player_hit"]
+[connection signal="timeout" from="MobTimer" to="." method="_on_mob_timer_timeout"]
+[connection signal="timeout" from="ScoreTimer" to="." method="_on_score_timer_timeout"]
+[connection signal="timeout" from="PickupTimer" to="." method="_on_pickup_timer_timeout"]
+[connection signal="timeout" from="StartTimer" to="." method="_on_start_timer_timeout"]
+[connection signal="start_game" from="HUD" to="." method="new_game"]
+[connection signal="stage_selected" from="HUD" to="." method="_on_stage_selected"]
+[connection signal="skin_selected" from="HUD" to="." method="_on_skin_selected"]
+[connection signal="pause_changed" from="HUD" to="." method="_on_hud_pause_changed"]
+[connection signal="quit_requested" from="HUD" to="." method="_on_hud_quit_requested"]

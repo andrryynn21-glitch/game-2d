@@ -1,0 +1,11 @@
+# Godot 4+ specific ignores
+.godot/
+/android/
+
+# Hasil export Web (lihat README bagian "Export Web & tes di HP").
+# Dikecualikan dari cabang utama; isinya diterbitkan ke cabang gh-pages oleh
+# ./publish.sh, jadi sumber dan hasil cetakan tidak tercampur.
+/build/
+
+# Sampah Finder macOS.
+.DS_Store

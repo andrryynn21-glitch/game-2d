@@ -1,0 +1,209 @@
+[gd_scene load_steps=4 format=3 uid="uid://30rc0fdm6ul6r"]
+
+[ext_resource type="Script" uid="uid://co56qs1n0o1ny" path="res://HUD.gd" id="1_script"]
+[ext_resource type="FontFile" uid="uid://dik77lv36vd8q" path="res://fonts/Xolonium-Regular.ttf" id="2_font"]
+[ext_resource type="Script" path="res://fx/HitFlash.gd" id="3_flash"]
+
+[node name="HUD" type="CanvasLayer"]
+layer = 2
+script = ExtResource("1_script")
+
+[node name="FlashRect" type="ColorRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+color = Color(1, 1, 1, 0)
+script = ExtResource("3_flash")
+
+[node name="DimRect" type="ColorRect" parent="."]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+color = Color(0.02, 0.02, 0.04, 0)
+
+[node name="TopBar" type="VBoxContainer" parent="."]
+visible = false
+anchor_right = 1.0
+offset_left = 16.0
+offset_top = 28.0
+offset_right = -16.0
+offset_bottom = 268.0
+mouse_filter = 2
+theme_override_constants/separation = 6
+
+[node name="TopRow" type="HBoxContainer" parent="TopBar"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="StagePanel" type="PanelContainer" parent="TopBar/TopRow"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="StageLabel" type="Label" parent="TopBar/TopRow/StagePanel"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 26
+text = "Stage 1"
+
+[node name="Spacer" type="Control" parent="TopBar/TopRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+
+[node name="PauseButton" type="Button" parent="TopBar/TopRow"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 26
+text = "II"
+
+[node name="ScoreLabel" type="Label" parent="TopBar"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 72
+horizontal_alignment = 1
+text = "0"
+
+[node name="BestLabel" type="Label" parent="TopBar"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 22
+horizontal_alignment = 1
+text = "Terbaik: 0"
+
+[node name="LivesBox" type="HBoxContainer" parent="TopBar"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="MessageLabel" type="Label" parent="."]
+visible = false
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = 16.0
+offset_top = -90.0
+offset_right = -16.0
+offset_bottom = 90.0
+mouse_filter = 2
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 60
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
+
+[node name="MenuCenter" type="CenterContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 0
+
+[node name="MenuCard" type="PanelContainer" parent="MenuCenter"]
+layout_mode = 2
+
+[node name="Menu" type="VBoxContainer" parent="MenuCenter/MenuCard"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="TitleLabel" type="Label" parent="MenuCenter/MenuCard/Menu"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 40
+horizontal_alignment = 1
+autowrap_mode = 2
+text = "Dodge the Creeps"
+
+[node name="MenuBestLabel" type="Label" parent="MenuCenter/MenuCard/Menu"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 22
+horizontal_alignment = 1
+text = "Terbaik: 0"
+
+[node name="StageSelectLabel" type="Label" parent="MenuCenter/MenuCard/Menu"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 24
+horizontal_alignment = 1
+text = "Pilih Stage"
+
+[node name="StageButtons" type="HBoxContainer" parent="MenuCenter/MenuCard/Menu"]
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="SkinSelectLabel" type="Label" parent="MenuCenter/MenuCard/Menu"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 24
+horizontal_alignment = 1
+text = "Pilih Skin"
+
+[node name="SkinButtons" type="GridContainer" parent="MenuCenter/MenuCard/Menu"]
+layout_mode = 2
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 10
+columns = 2
+
+[node name="ControlSelectLabel" type="Label" parent="MenuCenter/MenuCard/Menu"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 24
+horizontal_alignment = 1
+text = "Kontrol Sentuh"
+
+[node name="ControlButtons" type="HBoxContainer" parent="MenuCenter/MenuCard/Menu"]
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="StartButton" type="Button" parent="MenuCenter/MenuCard/Menu"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 40
+text = "Mulai"
+
+[node name="PauseCenter" type="CenterContainer" parent="."]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 0
+
+[node name="PauseCard" type="PanelContainer" parent="PauseCenter"]
+layout_mode = 2
+
+[node name="PauseBox" type="VBoxContainer" parent="PauseCenter/PauseCard"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="PauseTitle" type="Label" parent="PauseCenter/PauseCard/PauseBox"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 40
+horizontal_alignment = 1
+text = "Jeda"
+
+[node name="ResumeButton" type="Button" parent="PauseCenter/PauseCard/PauseBox"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 34
+text = "Lanjut"
+
+[node name="QuitButton" type="Button" parent="PauseCenter/PauseCard/PauseBox"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 26
+text = "Menu Utama"
+
+[node name="MessageTimer" type="Timer" parent="."]
+wait_time = 1.4
+one_shot = true
+
+[connection signal="pressed" from="TopBar/TopRow/PauseButton" to="." method="_on_pause_button_pressed"]
+[connection signal="pressed" from="MenuCenter/MenuCard/Menu/StartButton" to="." method="_on_start_button_pressed"]
+[connection signal="pressed" from="PauseCenter/PauseCard/PauseBox/ResumeButton" to="." method="_on_resume_button_pressed"]
+[connection signal="pressed" from="PauseCenter/PauseCard/PauseBox/QuitButton" to="." method="_on_quit_button_pressed"]
+[connection signal="timeout" from="MessageTimer" to="." method="_on_message_timer_timeout"]
